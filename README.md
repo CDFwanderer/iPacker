@@ -17,3 +17,4 @@ Table containing all<br/>items in the inentory | Table connecting a<br/>specific
 * Ability to print a checklist
 * Ability to score different items/packs
 * Different types of wights
+* Convert to .exe, so as to be able to run the app without using python
