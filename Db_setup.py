@@ -70,30 +70,3 @@ try:
 
 except sqlite3.OperationalError:
      print("Table could not be created")
-
-
-#
-
-# Get the Row names in table
-# theCursor.execute("PRAGMA TABLE_INFO(Items)")
-# rowNames = [nameTuple[1] for nameTuple in theCursor.fetchall()]
-# print(rowNames)
-
-# Get the number of rows in table
-# theCursor.execute("SELECT COUNT(*) FROM Items")
-# numofRows = theCursor.fetchall()
-# print("Total Rows: ", numofRows[0][0])
-
-
-# with db_conn:
-#     db_conn.row_factory = sqlite3.Row
-#
-#     theCursor = db_conn.cursor()
-#
-#     theCursor.execute("SELECT * FROM Items")
-#
-#     rows = theCursor.fetchall()
-#
-#     for row in rows:
-#         print("{} {}".format(row["ProductName"], row["Weight"]))
-
