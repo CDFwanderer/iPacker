@@ -185,6 +185,9 @@ class Main:
                 self.tablist[self.nb.index("current")] = [self.new_tab, is_pack_saved, self.new_pack]
             except AttributeError:
                 pass
+        except IndexError:
+            # Should open pack here
+            pass
         except:
             messagebox.showinfo(title="No Packs exist yet", message="You have not created any packs yet.")
 

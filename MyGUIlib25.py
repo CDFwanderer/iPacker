@@ -9,6 +9,10 @@ import sqlite3
 class changeableEntry(ttk.Entry):
     """Class that defines the ttk.Style of the application"""
 
+    # def __init__(self, tracevar, *args):
+    #     super().__init__(tracevar, *args)
+    #     self.tracevar = tracevar
+
     def highlight_style(self):
         """Sets a widget to highlight mode"""
 
@@ -30,11 +34,14 @@ class changeableEntry(ttk.Entry):
 
         self['style'] = 'Highlight.TEntry'
 
-        self.bind('<FocusIn>', self.default_style)  # <Enter> => mouse enters widget
+        # self.bind('<FocusIn>', self.default_style)  # <Enter> => mouse enters widget
+        # self.has_changed(self.get())
 
-    def default_style(self, event=None):
+    def default_style(self, event=None, traceVar=None, trace_id=None):
         self['style'] = 'TEntry' # ??
-        self.unbind('<FocusIn>')
+        if traceVar is not None and event is not None and trace_id is not None:
+            traceVar.trace_vdelete("w", trace_id) # in order to remove a trace on a stringvar, you need the trace's ID
+                                                  # which is output of the trace_id = stringvar.trace(..) call
 
     def is_empty(self):
         """Returns True if the chabgeableEntry has no value in it, otherwise False"""
@@ -941,7 +948,6 @@ class ChoiceInventory:
         # Use the sort function to restore TREEVIEW to original sorting
         self.sortby(self.tree, 0, 0)
 
-
 class LoadPacks(SearchableTree):
     def __init__(self, main, master, result0, header, treeoption, parent, get_pack_action):
         """Build a list of all saved packs with an "open pack"-button
@@ -1000,7 +1006,8 @@ class ChildWindow:
         self.new_win.focus_set()  # Focus on popup window
 
         # ENTRY-widgets
-        self.ent_pn = ttk.Entry(self.new_win)
+        self.ent_pn_val = StringVar()
+        self.ent_pn = changeableEntry(self.new_win, textvariable=self.ent_pn_val)  # tracevar=self.ent_pn_val
         vcmd = (root.register(self.onValidate), '%d', '%i', '%P', '%s', '%S', '%v', '%V', '%W')
         self.ent_weight = ttk.Entry(self.new_win, validate="key", validatecommand=vcmd)
         self.ent_brand = changeableEntry(self.new_win) # , style='Highlight.TEntry')
@@ -1045,7 +1052,6 @@ class ChildWindow:
         self.new_win.protocol("WM_DELETE_WINDOW", self.on_closing)
 
         self.ent_pn.focus_set()  # Sets the user's focus to ent_pn
-        self.ent_brand.highlight_style()
 
 
     def onValidate(self, d, i, P, s, S, v, V, W):
@@ -1065,6 +1071,8 @@ class ChildWindow:
             # we must choose a new item name
             messagebox.showerror("Error", "The product name already exists, please choose a new product name.")
             self.ent_pn.focus_set()
+            self.ent_pn.highlight_style()
+            self.ent_pn_val.trace_id = self.ent_pn_val.trace("w", lambda mode, event, tid: self.ent_pn.default_style(event, self.ent_pn_val, self.ent_pn_val.trace_id))  # right...
         else:
             # There is no duplicate productname in the treeview, so we can add the new item to the inventory
             return [self.ent_pn.get(), self.ent_weight.get(), self.ent_brand.get(),
@@ -1077,6 +1085,8 @@ class ChildWindow:
         self.parent.bttn_remove_item["state"] = NORMAL
         self.new_win.destroy()  # Quit the TOPLEVEL-widget, aka the ChildWindiw for inputing new items
 
+    def remove_trace(self):
+        self.ent_pn_val.trace_vdelete("w")
 
 # Window for editing items
 class ChildWindowEdit(ChildWindow):
