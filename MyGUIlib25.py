@@ -6,6 +6,14 @@ from tkinter import *
 from tkinter import messagebox
 import sqlite3
 
+class changeableButton(ttk.Button):
+
+    def change_state(self, state):
+        if state == 'enabl':
+            self['state'] = NORMAL
+        elif state == 'disabl':
+            self['state'] = DISABLED
+
 class changeableEntry(ttk.Entry):
     """Class that defines the ttk.Style of the application"""
 
@@ -45,9 +53,7 @@ class changeableEntry(ttk.Entry):
 
     def is_empty(self):
         """Returns True if the chabgeableEntry has no value in it, otherwise False"""
-
         val = self.get()
-
         if val is not None:
             return False
         else:
@@ -265,6 +271,9 @@ class ItemList(SearchableTree):
         self.update_weight()
         w_label_str = Label(self.master, text="Total inventory weight [g]:")
         w_label_str.grid(column=7, row=9, sticky="NE", padx=2, pady=2)
+
+        # self.tree.bind('<TreeviewSelect>', bttn_state('enabl'))
+        # self.tree.bind('FocusOut', 'disabl')
 
         # print(self.tree.item('I001')['values'])
 
