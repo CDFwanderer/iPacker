@@ -571,3 +571,5 @@ class Inventory:
 root = Tk()
 Inv = Main(root)
 root.mainloop()
+
+# mii
