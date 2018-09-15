@@ -56,7 +56,7 @@ class Main:
         root.geometry("1000x500")
 
         # Set the icon for the program. OBS must be .ico (use Gimp to edit icon file)
-        root.iconbitmap('rucksack.ico')
+        # root.iconbitmap('rucksack.ico')
 
         self.root = root
 
@@ -114,76 +114,79 @@ class Main:
     def open_pack(self, event=None):
         """Open database and send, in order to send info to open_pack-win"""
 
-        result = self.theCursor.execute("SELECT PackName FROM PackTravel")
-        data = result.fetchall()
+        try: # if db-table with PackTravels contains anything
+            result = self.theCursor.execute("SELECT PackName FROM PackTravel")
+            data = result.fetchall()
 
-        # Open a dialog-win with all saved packs and get the user to open one of those,
-        # set treview to selectmode="browse". Once a pack is selected, the button "open
-        open_pack_win = Toplevel()  # Create a TopLevel-widget, in which to place the dialog-win
-        local_frame = Frame(open_pack_win)
-        local_frame.pack(fill=BOTH, expand=True)
+            # Open a dialog-win with all saved packs and get the user to open one of those,
+            # set treview to selectmode="browse". Once a pack is selected, the button "open
+            open_pack_win = Toplevel()  # Create a TopLevel-widget, in which to place the dialog-win
+            local_frame = Frame(open_pack_win)
+            local_frame.pack(fill=BOTH, expand=True)
 
-        # Cool! You can pass object methods as parameters!
-        self.load_p = LoadPacks(main=self, master=local_frame, result0=data, header=["Pack Name"], treeoption='browse', parent=open_pack_win, get_pack_action=self.get_open_pack)
-        # print(self.pack_to_load)
+            # Cool! You can pass object methods as parameters!
+            self.load_p = LoadPacks(main=self, master=local_frame, result0=data, header=["Pack Name"], treeoption='browse', parent=open_pack_win, get_pack_action=self.get_open_pack)
+            # print(self.pack_to_load)
 
-        items_to_load0 = self.theCursor.execute("SELECT ID, ProductName FROM ItemPack WHERE PackName=?", (self.pack_to_load,))
-        items0 = items_to_load0.fetchall()
+            items_to_load0 = self.theCursor.execute("SELECT ID, ProductName FROM ItemPack WHERE PackName=?", (self.pack_to_load,))
+            items0 = items_to_load0.fetchall()
 
-        result = []
-        for item in items0:
-            self.theCursor.execute("SELECT ID, ProductName, Weight, Brand, Name, Category FROM Items WHERE ProductName=?", (item[1],))
-            # print(self.theCursor.fetchall())
-            result.append(self.theCursor.fetchall()[0])
+            result = []
+            for item in items0:
+                self.theCursor.execute("SELECT ID, ProductName, Weight, Brand, Name, Category FROM Items WHERE ProductName=?", (item[1],))
+                # print(self.theCursor.fetchall())
+                result.append(self.theCursor.fetchall()[0])
 
-        self.new_tab = ttk.Frame(self.nb)
-        self.new_tab.pack(fill=BOTH, expand=True)
+            self.new_tab = ttk.Frame(self.nb)
+            self.new_tab.pack(fill=BOTH, expand=True)
 
-        # Create a grid for frame-frame
-        for row in np.arange(2):
-            self.new_tab.rowconfigure(row, weight=1)
-            self.new_tab.columnconfigure(row, weight=1)
+            # Create a grid for frame-frame
+            for row in np.arange(2):
+                self.new_tab.rowconfigure(row, weight=1)
+                self.new_tab.columnconfigure(row, weight=1)
 
-        try:
-            self.nb.add(self.new_tab, text=self.pack_to_load)
-            tree_frame = ttk.Frame(self.new_tab)
-            tree_frame.grid(row=0, column=0, rowspan=2, sticky="NWES")
+            try:
+                self.nb.add(self.new_tab, text=self.pack_to_load)
+                tree_frame = ttk.Frame(self.new_tab)
+                tree_frame.grid(row=0, column=0, rowspan=2, sticky="NWES")
 
-            # --- Create a grid for frame-frame ---
-            for row in np.arange(10):
-                tree_frame.rowconfigure(row, weight=1)
-                tree_frame.columnconfigure(row, weight=1)
+                # --- Create a grid for frame-frame ---
+                for row in np.arange(10):
+                    tree_frame.rowconfigure(row, weight=1)
+                    tree_frame.columnconfigure(row, weight=1)
 
-            self.new_pack = NewTab(tree_frame, self.db_conn, self.theCursor, header=["Product Name", "Weight", "Brand", "Name", "Category"], result0=result, treeoption="browse")
-            self.nb.select(self.new_tab)
+                self.new_pack = NewTab(tree_frame, self.db_conn, self.theCursor, header=["Product Name", "Weight", "Brand", "Name", "Category"], result0=result, treeoption="browse")
+                self.nb.select(self.new_tab)
 
-            # --- Create buttons ---
-            bttn_frame = ttk.Frame(self.new_tab)
-            bttn_frame.grid(row=0, column=1)
-            bttn_add_item = ttk.Button(bttn_frame, text="Add new items", command=self.add_items)
-            bttn_add_item.pack()
-            bttn_remove_item = ttk.Button(bttn_frame, text="Remove item", command=self.remove_item)
-            bttn_remove_item.pack()
-            bttn_save_pack = ttk.Button(bttn_frame, text="Save pack", command=self.save_pack)
-            bttn_save_pack.pack()
-            bttn_exit_pack = ttk.Button(bttn_frame, text="Exit pack",
-                                        command=self.quit_rutine)  # Should trigger messagebox, if not saved!
-            bttn_exit_pack.pack()
+                # --- Create buttons ---
+                bttn_frame = ttk.Frame(self.new_tab)
+                bttn_frame.grid(row=0, column=1)
+                bttn_add_item = ttk.Button(bttn_frame, text="Add new items", command=self.add_items)
+                bttn_add_item.pack()
+                bttn_remove_item = ttk.Button(bttn_frame, text="Remove item", command=self.remove_item)
+                bttn_remove_item.pack()
+                bttn_save_pack = ttk.Button(bttn_frame, text="Save pack", command=self.save_pack)
+                bttn_save_pack.pack()
+                bttn_exit_pack = ttk.Button(bttn_frame, text="Exit pack",
+                                            command=self.quit_rutine)  # Should trigger messagebox, if not saved!
+                bttn_exit_pack.pack()
 
-            # --- Entry for pack-name ---
-            entr_pack_name = ttk.Entry(bttn_frame)
-            entr_pack_name.pack()
-            bttn_get_name = ttk.Button(bttn_frame, text="Update pack-name",
-                                       command=lambda: self.update_name(entr_pack_name))
-            bttn_get_name.pack()
+                # --- Entry for pack-name ---
+                entr_pack_name = ttk.Entry(bttn_frame)
+                entr_pack_name.pack()
+                bttn_get_name = ttk.Button(bttn_frame, text="Update pack-name",
+                                           command=lambda: self.update_name(entr_pack_name))
+                bttn_get_name.pack()
 
-            # Variable to keep track if current pack is saved
-            is_pack_saved = False
+                # Variable to keep track if current pack is saved
+                is_pack_saved = False
 
-            # Add to the tablist-dict [tab-object, is_pack_saved, NewTab-obj]
-            self.tablist[self.nb.index("current")] = [self.new_tab, is_pack_saved, self.new_pack]
-        except AttributeError:
-            pass
+                # Add to the tablist-dict [tab-object, is_pack_saved, NewTab-obj]
+                self.tablist[self.nb.index("current")] = [self.new_tab, is_pack_saved, self.new_pack]
+            except AttributeError:
+                pass
+        except:
+            messagebox.showinfo(title="No Packs exist yet", message="You have not created any packs yet.")
 
     def create_new_pack(self, event=None):
         """Open a new tab in the notebook-widget and populate it with a tree and buttons."""
