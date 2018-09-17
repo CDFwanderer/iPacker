@@ -6,6 +6,11 @@ from tkinter import *
 from tkinter import messagebox
 import sqlite3
 
+class changeableButton(ttk.Button):
+
+    def change_state(self, newstate):
+        self['state'] = newstate # if you do not want an if :)
+
 class changeableEntry(ttk.Entry):
     """Class that defines the ttk.Style of the application"""
 
@@ -45,9 +50,7 @@ class changeableEntry(ttk.Entry):
 
     def is_empty(self):
         """Returns True if the chabgeableEntry has no value in it, otherwise False"""
-
         val = self.get()
-
         if val is not None:
             return False
         else:
@@ -249,12 +252,13 @@ class ItemList(SearchableTree):
     """This is a widget with a treeview, and search-function for the
     treeview."""
 
-    def __init__(self, master, result0, header, db_conn, treeoption=None):
+    def __init__(self, master, result0, header, db_conn, treeoption=None, track_bbtn=None):
         super().__init__(master, result0, header, treeoption)
 
         #
         self.db_conn = db_conn
         self.master = master
+        self.track_bttn = track_bbtn
 
         # Get the stored items from the databse
         # self.result0 = result0
@@ -266,7 +270,23 @@ class ItemList(SearchableTree):
         w_label_str = Label(self.master, text="Total inventory weight [g]:")
         w_label_str.grid(column=7, row=9, sticky="NE", padx=2, pady=2)
 
-        # print(self.tree.item('I001')['values'])
+        self.tree.bind('<<TreeviewSelect>>', lambda status: self.is_selected("Y"))
+        self.tree.bind('<FocusOut>', lambda status: self.is_selected("N"))
+
+    def is_selected(self, status, event=None):
+        if status == "Y":
+            if len(self.tree.selection()) >= 1:  # This means that you have an item or more selected
+                self.track_bttn.change_state(NORMAL)
+            else: # if you have left the tree (highligting will still be there and selection will give empty tuple)
+                self.track_bttn.change_state(DISABLED)
+        if status == "N":
+            if self.master.focus_get() == self.track_bttn:
+                self.track_bttn.change_state(NORMAL)
+                print("ej")
+            else:
+                self.tree.selection_remove(self.tree.focus()) # Remove highlighting
+            # self.tree.focus() gets item that is selected, and self.tree.selection_remove takes away the focus from
+            # said item. However not perfect... Because now you cannot use the 'remove items'-bttn :p
 
     def get_line_data(self):
         """Method that returns the values of selected treview-item"""
@@ -338,7 +358,7 @@ class ItemList(SearchableTree):
 
             row = list(row)
             row.append(row.pop(0))
-            self.tree.insert('', 'end', values=row)
+            self.tree.insert('', 'end', values=row) # , tags=('ttk')
 
     def update_weight(self):
         tot_weight = 0
@@ -1065,7 +1085,8 @@ class ChildWindow:
     def get_entries(self):
         """Returns the entered values in a list"""
 
-        if {self.ent_pn.get()}.issubset([i[0] for i in
+        # Check if product name exists already. Use "...".lower() to compare lowercase strings
+        if {self.ent_pn.get().lower()}.issubset([i[0].lower() for i in
                                          self.items.get_list_of_items()]):  # in this case '{..}' creates a set, which is slightly faster
             # The product name for the new item, that we want to add, already exists in the treeview, so
             # we must choose a new item name
@@ -1125,7 +1146,9 @@ class ChildWindowEdit(ChildWindow):
                           self.ent_name.get(), self.combo.get()]  # ent_cat is alt., if we don not use combobox
 
         # Can this be the same in both ChildWindows? So no need to override method?
-        if self.ent_pn.get() != self.orig_pn:
+
+        # Chek if product name already exists
+        if self.ent_pn.get().lower() != self.orig_pn.lower():
             if {self.ent_pn.get()}.issubset([i[0] for i in
                                              self.items.get_list_of_items()]):  # in this case '{..}' creates a set, which is slightly faster
                 # The product name for the new item, that we want to add, already exists in the treeview, so
