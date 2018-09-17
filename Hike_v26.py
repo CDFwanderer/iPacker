@@ -4,7 +4,7 @@ import numpy as np
 import tkinter.font as tkFont
 import tkinter.ttk as ttk
 from tkinter import messagebox
-from MyGUIlib25 import ItemList, ChoiceInventory, LoadPacks, ChildWindow, ChildWindowEdit, NewTab
+from MyGUIlib25 import ItemList, ChoiceInventory, LoadPacks, ChildWindow, ChildWindowEdit, NewTab, changeableButton
 
 """
 IDEAS:
@@ -502,10 +502,15 @@ class Inventory:
 
         # Create an ITEMS-obect (ie. the list with all items)
         self.items = ItemList(tree_frame, data, header, db_conn)
+        # print(self.track_selection())
 
         # Buttons for adding and removing items in Inventory
         self.bttn_add_item = ttk.Button(bttn_frame, text="Add Item", command=self.create_add_to_tree_window)
-        self.bttn_remove_item = ttk.Button(bttn_frame, text="Remove Item", command=self.items.remove_from_tree)
+        self.bttn_remove_item = changeableButton(bttn_frame, text="Remove Item", command=self.items.remove_from_tree)
+        self.bttn_remove_item.change_state(DISABLED)
+
+        self.items.track_bttn = self.bttn_remove_item  # Ugly and bad, don't do this!
+
         self.bttn_edit_item = ttk.Button(bttn_frame, text="Edit Item", command=self.create_edit_item_window)
 
         self.bttn_add_item.pack(side="left")

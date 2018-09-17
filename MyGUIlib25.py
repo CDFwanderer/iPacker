@@ -8,12 +8,8 @@ import sqlite3
 
 class changeableButton(ttk.Button):
 
-    def change_state(self, state):
-        # if state == 'enabl':
-        #     self['state'] = NORMAL
-        # elif state == 'disabl':
-        #     self['state'] = DISABLED
-        self['state'] = state # if you do not want an if :)
+    def change_state(self, newstate):
+        self['state'] = newstate # if you do not want an if :)
 
 class changeableEntry(ttk.Entry):
     """Class that defines the ttk.Style of the application"""
@@ -256,12 +252,13 @@ class ItemList(SearchableTree):
     """This is a widget with a treeview, and search-function for the
     treeview."""
 
-    def __init__(self, master, result0, header, db_conn, treeoption=None):
+    def __init__(self, master, result0, header, db_conn, treeoption=None, track_bbtn=None):
         super().__init__(master, result0, header, treeoption)
 
         #
         self.db_conn = db_conn
         self.master = master
+        self.track_bttn = track_bbtn
 
         # Get the stored items from the databse
         # self.result0 = result0
@@ -273,10 +270,23 @@ class ItemList(SearchableTree):
         w_label_str = Label(self.master, text="Total inventory weight [g]:")
         w_label_str.grid(column=7, row=9, sticky="NE", padx=2, pady=2)
 
-        # self.tree.bind('<TreeviewSelect>', bttn_state('enabl'))
-        # self.tree.bind('FocusOut', 'disabl')
+        self.tree.bind('<<TreeviewSelect>>', lambda status: self.is_selected("Y"))
+        self.tree.bind('<FocusOut>', lambda status: self.is_selected("N"))
 
-        # print(self.tree.item('I001')['values'])
+    def is_selected(self, status, event=None):
+        if status == "Y":
+            if len(self.tree.selection()) >= 1:  # This means that you have an item or more selected
+                self.track_bttn.change_state(NORMAL)
+            else: # if you have left the tree (highligting will still be there and selection will give empty tuple)
+                self.track_bttn.change_state(DISABLED)
+        if status == "N":
+            if self.master.focus_get() == self.track_bttn:
+                self.track_bttn.change_state(NORMAL)
+                print("ej")
+            else:
+                self.tree.selection_remove(self.tree.focus()) # Remove highlighting
+            # self.tree.focus() gets item that is selected, and self.tree.selection_remove takes away the focus from
+            # said item. However not perfect... Because now you cannot use the 'remove items'-bttn :p
 
     def get_line_data(self):
         """Method that returns the values of selected treview-item"""
@@ -348,7 +358,7 @@ class ItemList(SearchableTree):
 
             row = list(row)
             row.append(row.pop(0))
-            self.tree.insert('', 'end', values=row)
+            self.tree.insert('', 'end', values=row) # , tags=('ttk')
 
     def update_weight(self):
         tot_weight = 0
