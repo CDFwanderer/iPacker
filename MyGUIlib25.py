@@ -9,10 +9,11 @@ import sqlite3
 class changeableButton(ttk.Button):
 
     def change_state(self, state):
-        if state == 'enabl':
-            self['state'] = NORMAL
-        elif state == 'disabl':
-            self['state'] = DISABLED
+        # if state == 'enabl':
+        #     self['state'] = NORMAL
+        # elif state == 'disabl':
+        #     self['state'] = DISABLED
+        self['state'] = state # if you do not want an if :)
 
 class changeableEntry(ttk.Entry):
     """Class that defines the ttk.Style of the application"""
@@ -1074,7 +1075,8 @@ class ChildWindow:
     def get_entries(self):
         """Returns the entered values in a list"""
 
-        if {self.ent_pn.get()}.issubset([i[0] for i in
+        # Check if product name exists already. Use "...".lower() to compare lowercase strings
+        if {self.ent_pn.get().lower()}.issubset([i[0].lower() for i in
                                          self.items.get_list_of_items()]):  # in this case '{..}' creates a set, which is slightly faster
             # The product name for the new item, that we want to add, already exists in the treeview, so
             # we must choose a new item name
@@ -1134,7 +1136,9 @@ class ChildWindowEdit(ChildWindow):
                           self.ent_name.get(), self.combo.get()]  # ent_cat is alt., if we don not use combobox
 
         # Can this be the same in both ChildWindows? So no need to override method?
-        if self.ent_pn.get() != self.orig_pn:
+
+        # Chek if product name already exists
+        if self.ent_pn.get().lower() != self.orig_pn.lower():
             if {self.ent_pn.get()}.issubset([i[0] for i in
                                              self.items.get_list_of_items()]):  # in this case '{..}' creates a set, which is slightly faster
                 # The product name for the new item, that we want to add, already exists in the treeview, so

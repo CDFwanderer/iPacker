@@ -54,7 +54,7 @@ printDB()
 try:
     db_conn.execute("CREATE TABLE ItemPack (ID INTEGER PRIMARY KEY "
                     "AUTOINCREMENT NOT NULL, ProductName TEXT NOT NULL, "
-                    "PackName TEXT);")  # DATA Types: NULL, INTEGER, TEXT, REAL (floating numbers), BLOB (binary data)
+                    "PackName TEXT, StartDate TEXT, EndDate TEXT);")  # DATA Types: NULL, INTEGER, TEXT, REAL (floating numbers), BLOB (binary data)
     db_conn.commit()
 
 except sqlite3.OperationalError:
