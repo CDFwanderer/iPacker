@@ -7,7 +7,7 @@ Currently, my aim is to create a local app with the following properties:
 * Manage an inventory with all your items
 * Create, store and edit packs, based on your inventory
 
-The project is, at the moment based on an sqlite3-database for storing the data, with tree tables:
+The project is, at the moment based on an sqlite3-database for storing the data, with three tables:
 
 Items | Item Pack | PackTravel
 ------------ | ------------- | -------------
