@@ -252,13 +252,14 @@ class ItemList(SearchableTree):
     """This is a widget with a treeview, and search-function for the
     treeview."""
 
-    def __init__(self, master, result0, header, db_conn, treeoption=None, track_bbtn=None):
+    def __init__(self, master, result0, header, db_conn, treeoption=None, track_bbtn=None, track_bttn2=None):
         super().__init__(master, result0, header, treeoption)
 
         #
         self.db_conn = db_conn
         self.master = master
         self.track_bttn = track_bbtn
+        self.track_bttn2 = track_bttn2
 
         # Get the stored items from the databse
         # self.result0 = result0
@@ -738,8 +739,34 @@ class LoadPacks(SearchableTree):
         self.bttn_open_pack["state"] = ACTIVE  # Only allow the user to press the button if a new pack is selected!
 
 
-class ButtonsArea:
-    def __init__(self, master_gui, master_obj):
+# class ButtonsArea:
+#     def __init__(self, master_gui, master_obj):
+#         # --- Create buttons ---
+#         # bttn_frame = ttk.Frame(master_gui)
+#         # bttn_frame.grid(row=0, column=1)
+#         bttn_add_item = ttk.Button(master_gui, text="Add new items", command=master_obj.add_items)
+#         bttn_add_item.pack()
+#         bttn_remove_item = ttk.Button(master_gui, text="Remove item", command=master_obj.remove_item)
+#         bttn_remove_item.pack()
+#         bttn_save_pack = ttk.Button(master_gui, text="Save pack", command=master_obj.save_pack)
+#         bttn_save_pack.pack()
+#         bttn_exit_pack = ttk.Button(master_gui, text="Exit pack",
+#                                     command=master_obj.quit_rutine)  # Should trigger messagebox, if not saved!
+#         bttn_exit_pack.pack()
+#
+#         # --- Entry for pack-name ---
+#         entr_pack_name = ttk.Entry(master_gui)
+#         entr_pack_name.pack()
+#         bttn_get_name = ttk.Button(master_gui, text="Update pack-name",
+#                                    command=lambda: master_obj.update_name(entr_pack_name))
+#         bttn_get_name.pack()
+
+
+class ButtonsArea(Frame):
+    """Trying out a buttons-area obj, which should be able to work as a tkinter-frame-obj, i.e. it can be packed as
+       normal but has the added initialisation of buttons in it self."""
+    def __init__(self, master_gui, master_obj, master=None, cnf={}, **kw):
+        super().__init__()
         # --- Create buttons ---
         # bttn_frame = ttk.Frame(master_gui)
         # bttn_frame.grid(row=0, column=1)
@@ -752,7 +779,6 @@ class ButtonsArea:
         bttn_exit_pack = ttk.Button(master_gui, text="Exit pack",
                                     command=master_obj.quit_rutine)  # Should trigger messagebox, if not saved!
         bttn_exit_pack.pack()
-
         # --- Entry for pack-name ---
         entr_pack_name = ttk.Entry(master_gui)
         entr_pack_name.pack()
