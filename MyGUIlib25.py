@@ -282,6 +282,7 @@ class ItemList(SearchableTree):
                 self.track_bttn.change_state(DISABLED)
         if status == "N":
             if self.master.focus_get() == self.track_bttn:
+                # print(type(self.master.focus_get()))
                 self.track_bttn.change_state(NORMAL)
                 print("ej")
             else:
@@ -367,6 +368,9 @@ class ItemList(SearchableTree):
             tot_weight += self.tree.item(line)['values'][1]
 
         self.w_label["text"] = str(tot_weight)
+
+    def is_added(self):
+        """If an item has already been added, returns True, otherwise False"""
 
     def is_in_tree(self, val):
         """Checks if val is in the tree and returns a list for true and false"""

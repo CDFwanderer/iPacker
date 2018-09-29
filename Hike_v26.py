@@ -96,13 +96,15 @@ class Main:
         # which contains the Inventory-obj (which displays all pack-items in the db (table-name: 'Items')
         maintabframe = ttk.Frame(root)
         maintabframe.pack(fill=BOTH, expand=True)
+        # maintabframe.config(background="pink")
         self.nb = ttk.Notebook(maintabframe)
         self.nb.pack(fill=BOTH, expand=True)
 
         # Get the data from database, a cursor, and db-connection
         self.data, self.theCursor, self.db_conn = self.setup_db()
 
-        mainpage = ttk.Frame(self.nb)
+        mainpage = Frame(self.nb)
+        mainpage.config(background="pink") # To track frame objects
         inv = Inventory(mainpage, self.data, self.theCursor, self.db_conn)
         self.nb.add(mainpage, text="Inventory")
 
@@ -465,13 +467,17 @@ class Inventory:
 
         self.root = root
 
-        tree_frame = ttk.Frame(root)
-        note_frame = ttk.LabelFrame(root, text="Comment Area")
+        tree_frame = Frame(root)
+        note_frame = LabelFrame(root, text="Comment Area")
         bttn_frame = Frame(root)
 
         tree_frame.grid(row=0, column=0, rowspan=2, columnspan = 2, sticky="NWES")
         note_frame.grid(row=1, column=2, sticky="NSWE", pady=10, padx=10)
         bttn_frame.grid(row=0, column=2, sticky="NSWE", pady=10, padx=10)
+
+        tree_frame.config(background="yellow")
+        note_frame.config(bg='black')
+        bttn_frame.config(bg='blue')
 
         # Create a grid for frame-frame
         for row in np.arange(10):
